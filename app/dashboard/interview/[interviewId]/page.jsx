@@ -6,11 +6,12 @@ import { eq } from "drizzle-orm";
 import { Lightbulb, WebcamIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation"; // Import useParams
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 
 function Interview() {
-  const params = React.use(useParams()); // ✅ Unwrap params correctly
+  const params = useParams();
+
   const [interviewData, setInterviewData] = useState();
   const [webCamEnabled, setWebCamEnabled] = useState(false);
 
