@@ -5,19 +5,31 @@ export async function POST(req) {
     const { jobDescription } = await req.json();
 
     if (!jobDescription) {
-      return new Response(JSON.stringify({ error: "Job description is required." }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Job description is required." }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const prompt = `Suggest top 5 online courses based on the following job description: "${jobDescription}". Provide course names only.`;
+    const prompt = `Suggest 5 high-quality online courses relevant to this job description: "${jobDescription}". Format each course as "[Course Name](Course URL)".`;
 
     const response = await model.generateContent(prompt);
-    const text = response.response.text();
+    const text = await response.response.text(); // Await text content
 
-    return new Response(JSON.stringify({ recommendations: text.split("\n") }), { status: 200 });
+    const recommendations = text.split("\n").filter((line) => line.trim() !== "");
+
+    return new Response(JSON.stringify({ recommendations }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    console.error("Error fetching course recommendations:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
