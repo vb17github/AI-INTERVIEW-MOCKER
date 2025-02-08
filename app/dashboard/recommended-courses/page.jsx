@@ -1,6 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function RecommendedCourses() {
   const [jobDescription, setJobDescription] = useState("");
@@ -13,7 +13,7 @@ export default function RecommendedCourses() {
     setError(null);
 
     try {
-      const response = await fetch("/api/gemini-recommendations", {
+      const response = await fetch("/api/scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobDescription }),
@@ -24,12 +24,7 @@ export default function RecommendedCourses() {
       }
 
       const data = await response.json();
-      const formattedCourses = data.recommendations.map((course) => {
-        const match = course.match(/\[(.*?)\]\((.*?)\)/);
-        return match ? { title: match[1], url: match[2] } : { title: course, url: "#" };
-      });
-
-      setCourses(formattedCourses);
+      setCourses(data.courses);
     } catch (error) {
       setError(error.message);
     }
