@@ -1,24 +1,36 @@
-export default async function handler(req, res) {
-    const { query } = req.query; // Get the search keyword
-  
-    if (!query) {
-      return res.status(400).json({ error: "Query parameter is required" });
+import puppeteer from "puppeteer";
+
+export async function POST(req) {
+  try {
+    const { jobDescription } = await req.json();
+    if (!jobDescription) {
+      return new Response(JSON.stringify({ error: "Job description is required" }), { status: 400 });
     }
-  
-    const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY; // Get API key from .env.local
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&key=${apiKey}`;
-  
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-  
-      if (data.error) {
-        return res.status(500).json({ error: data.error.message });
-      }
-  
-      return res.status(200).json(data);
-    } catch (error) {
-      return res.status(500).json({ error: error.message });
-    }
+
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    
+    const searchQuery = `best ${jobDescription} courses site:coursera.org OR site:udemy.com OR site:edx.org OR site:youtube.com`;
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+    
+    await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
+    
+    const courses = await page.evaluate(() => {
+      const links = [];
+      document.querySelectorAll("a").forEach((link) => {
+        const title = link.innerText.trim();
+        const url = link.href;
+        if (url.startsWith("http") && !url.includes("google.com")) {
+          links.push({ title, url });
+        }
+      });
+      return links.slice(0, 5); // Get top 5 links
+    });
+
+    await browser.close();
+
+    return new Response(JSON.stringify({ courses }), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
-  
+}
