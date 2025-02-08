@@ -26,7 +26,7 @@ export const Header = () => {
           <Link href="/dashboard">Dashboard</Link>
         </li>
         <li className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${path=='/dashboard/questions' && 'text-primary font-bold'}`}>
-          <Link href="/dashboard/questions">Courses</Link>
+          <Link href="/dashboard/recommended-courses">Recommended Courses</Link>
         </li>
         <li className={`hover:text-primary hover:font-bold transition-all cursor-pointer ${path=='/dashboard/job-recommendation' && 'text-primary font-bold'}`}>
           <Link href="/dashboard/job-recommendation">Job Recommendation</Link>
