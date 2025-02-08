@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Search, Filter } from "lucide-react";
 import InterviewItemCard from "./_components/InterviewItemCard";
 import "tailwindcss/tailwind.css";
+import AddNewInterview from "./_components/AddNewInterview";
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -37,6 +38,7 @@ const Dashboard = () => {
       <header className="flex justify-between items-center pb-6 border-b border-gray-300 dark:border-gray-700">
         <h1 className="text-2xl font-bold">Mock Interviews</h1>
         <div className="flex gap-4">
+        
           <Input
             icon={<Search />}
             placeholder="Search by job role..."
@@ -48,14 +50,17 @@ const Dashboard = () => {
           </Button>
         </div>
       </header>
-
+      
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <AddNewInterview/>
         {interviewList
           .filter((interview) => interview.jobPosition.toLowerCase().includes(searchTerm.toLowerCase()))
           .map((interview, index) => (
             <InterviewItemCard key={index} interview={interview} />
           ))}
+         
       </div>
+     
     </div>
   );
 };
