@@ -30,12 +30,11 @@ export default function Page() {
         </a>
 
         <h2 className="mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl">
-          Welcome to AI INTERVIEW MOCKER BITCHES!!
+          Welcome to AI INTERVIEW MOCKER !!
         </h2>
 
         <p className="mt-4 leading-relaxed text-white/90">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi nam dolorum aliquam,
-          quibusdam aperiam voluptatum.
+          Join us to prepare for interviews with voice and webcam features.
         </p>
       </div>
     </section>
@@ -73,7 +72,7 @@ export default function Page() {
           </p>
         </div>
 
-        <SignIn />;
+        <SignIn />
       </div>
     </main>
   </div>
