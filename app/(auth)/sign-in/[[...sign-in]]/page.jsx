@@ -67,6 +67,7 @@ export default function Page() {
           </h1>
 
           <p className="mt-4 leading-relaxed text-gray-500">
+            join the new and revolutionary way to prepare for your upcoming job interviews and lets hack it!
             
           </p>
         </div>
