@@ -12,6 +12,12 @@ import { UserAnswer } from "@/utils/schema";
 import { useUser } from "@clerk/nextjs";
 import moment from "moment";
 
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user", // "user" = front camera, "environment" = back camera
+};
+
 const RecordAnswerSection = ({
   mockInterviewQuestion,
   activeQuestionIndex,
@@ -119,10 +125,12 @@ const RecordAnswerSection = ({
           alt="webcam"
           priority
         />
-        {/* <Webcam
-          style={{ height: 300, width: "100%", zIndex: 10 }}
-          mirrored={true}
-        /> */}
+       <Webcam
+  style={{ height: 300, width: "100%", zIndex: 10 }}
+  mirrored={true}
+  videoConstraints={videoConstraints}
+/>
+
       </div>
       <Button
         disabled={loading}
