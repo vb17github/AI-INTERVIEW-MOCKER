@@ -32,33 +32,31 @@ function AddNewInterview() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     const inputPrompt = `Job position: ${jobPosition}, Job Description: ${jobDescription}, Years of Experience: ${jobExperience}, Depends on Job Position, Job Description and Years of Experience give us ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} Interview question along with Answer in JSON format, Give us question and Answer field on JSON,Each question and answer should be in the format:
-    {
-      "question": "Your question here",
-      "answer": "Your answer here"
-    }`;
-  
+  {
+    "question": "Your question here",
+    "answer": "Your answer here"
+
+  also, if a user is not giving an accurate answer of a particular topic then genrate more question of the same topic untill a satisfactory answer is provided by the user
+  }`;
+
     try {
       const result = await chatSession.sendMessage(inputPrompt);
       const responseText = await result.response.text();
-      console.log("🚀 ~ file: AddNewInterview.jsx:41 ~ onSubmit ~ responseText:", responseText);
-  
-      // Match the JSON array in the response
+      console.log("🚀 ~ file: AddNewInterview.jsx:41 ~ onSubmit ~ responseText:", responseText)
       const jsonMatch = responseText.match(/\[.*?\]/s);
       if (!jsonMatch) {
         throw new Error("No valid JSON array found in the response");
       }
   
-      const jsonResponsePart = jsonMatch[0].trim();
+      const jsonResponsePart = jsonMatch[0];
       console.log("🚀 ~ file: AddNewInterview.jsx:43 ~ onSubmit ~ jsonResponsePart:", jsonResponsePart);
   
-      // Try parsing the JSON response part
-      try {
-        const mockResponse = JSON.parse(jsonResponsePart);
-        console.log("🚀 ~ file: AddNewInterview.jsx:45 ~ onSubmit ~ mockResponse:", mockResponse);
+      if (jsonResponsePart) {
+        const mockResponse = JSON.parse(jsonResponsePart.trim());
+        console.log("🚀 ~ file: AddNewInterview.jsx:45 ~ onSubmit ~ mockResponse:", mockResponse)
         setJsonResponse(mockResponse);
-  
         const jsonString = JSON.stringify(mockResponse);
         const res = await db.insert(MockInterview)
           .values({
@@ -70,12 +68,10 @@ function AddNewInterview() {
             createdBy: user?.primaryEmailAddress?.emailAddress,
             createdAt: moment().format('DD-MM-YYYY'),
           }).returning({ mockId: MockInterview.mockId });
-  
-        setLoading(false);
-        router.push(`dashboard/interview/${res[0]?.mockId}`);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        // Handle invalid JSON parsing gracefully
+          setLoading(false);
+          router.push(`dashboard/interview/${res[0]?.mockId}`);
+      } else {
+        console.error("Error: Unable to extract JSON response");
       }
     } catch (error) {
       console.error("Error fetching interview questions:", error);
@@ -83,7 +79,6 @@ function AddNewInterview() {
       setLoading(false);
     }
   };
-  
 
   return (
     <div>
@@ -103,10 +98,10 @@ function AddNewInterview() {
           <DialogDescription>
             <form onSubmit={onSubmit}>
               <div>
-                {/* <p>
+                <p>
                   Add details about your job position/role, job description, and
                   years of experience
-                </p> */}
+                </p>
                 <div className="mt-7 my-3">
                   <label>Job Role/Job Position</label>
                   <Input
