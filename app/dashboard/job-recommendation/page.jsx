@@ -1,12 +1,15 @@
-export default function JobRecommendationPage() {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">Job Recommendations</h1>
-        <p>Connect your LinkedIn to get personalized job recommendations.</p>
-        <button className="mt-4 p-2 bg-blue-500 text-white rounded">
-          Connect LinkedIn
-        </button>
-      </div>
-    );
-  }
-  
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dXNlZnVsLWFkZGVyLTc3LmNsZXJrLmFjY291bnRzLmRldiQ
+CLERK_SECRET_KEY=sk_test_MnWi4Fx2YtvhefLHB5XnOhtyCk8zCkIkkVjXWLews1
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+
+
+
+NEXT_PUBLIC_DRIZZLE_DB_URL=postgresql://neondb_owner:npg_JBs7P0FueDGY@ep-withered-mouse-a8iahzbq-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+NEXT_PUBLIC_GEMINI_API_KEY=AIzaSyBL-t_8eOcqkSF5JfPQY4s44tslDzxlLjs
+NEXT_PUBLIC_LINKEDIN_CLIENT_ID=8669b8hnjxe09y
+LINKEDIN_CLIENT_SECRET=WPL_AP1.Tw2yJHdoF4Zq0kNb.wKAJew==
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=6RKNiuO/lVWI8NmhV/xHw8AYAR8R0jQQyz0te0++Wm8=
+
