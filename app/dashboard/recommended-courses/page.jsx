@@ -1,38 +1,83 @@
-import puppeteer from "puppeteer";
-import { NextResponse } from "next/server";
+"use client";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
-export async function POST(req) {
-  try {
-    const { jobDescription } = await req.json();
-    if (!jobDescription) {
-      return NextResponse.json({ error: "Job description is required" }, { status: 400 });
+export default function RecommendedCourses() {
+  const [jobDescription, setJobDescription] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchRecommendedCourses = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/gemini-recommendations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobDescription }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch recommendations");
+      }
+
+      const data = await response.json();
+      const formattedCourses = data.recommendations.map((course) => {
+        const match = course.match(/\[(.*?)\]\((.*?)\)/);
+        return match ? { title: match[1], url: match[2] } : { title: course, url: "#" };
+      });
+
+      setCourses(formattedCourses);
+    } catch (error) {
+      setError(error.message);
     }
 
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
+    setLoading(false);
+  };
 
-    // Google search query for courses
-    const searchQuery = `best ${jobDescription} courses site:coursera.org OR site:udemy.com OR site:edx.org OR site:youtube.com`;
-    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-4">Recommended Courses</h2>
+      <p className="text-gray-600 mb-2">
+        Enter a job description, and AI will suggest relevant courses.
+      </p>
 
-    await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
+      <textarea
+        className="w-full p-3 border rounded-md mt-2 text-gray-700"
+        rows={4}
+        placeholder="Enter job description..."
+        value={jobDescription}
+        onChange={(e) => setJobDescription(e.target.value)}
+      />
 
-    const courses = await page.evaluate(() => {
-      const links = [];
-      document.querySelectorAll("a").forEach((link) => {
-        const title = link.innerText.trim();
-        const url = link.href;
-        if (url.startsWith("http") && !url.includes("google.com")) {
-          links.push({ title, url });
-        }
-      });
-      return links.slice(0, 5); // Return top 5 links
-    });
+      <Button className="mt-4 w-full" onClick={fetchRecommendedCourses} disabled={loading}>
+        {loading ? "Fetching..." : "Get Recommendations"}
+      </Button>
 
-    await browser.close();
+      {error && <p className="text-red-500 mt-4">{error}</p>}
 
-    return NextResponse.json({ courses }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+      <div className="mt-6">
+        {courses.length > 0 ? (
+          <ul className="list-disc pl-6 space-y-2">
+            {courses.map((course, index) => (
+              <li key={index}>
+                <a
+                  href={course.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {course.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500 mt-4">No recommendations yet.</p>
+        )}
+      </div>
+    </div>
+  );
 }
